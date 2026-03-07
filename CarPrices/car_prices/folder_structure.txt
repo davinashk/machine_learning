@@ -1,0 +1,58 @@
+New Python ML project structure
+You now have a more standard Python project layout for your car price model:
+
+Top-level project
+
+requirements.txt – lists core dependencies (torch, pandas).
+CarPrices project
+
+Existing:
+carPriceNeuron.py – original training script (still present).
+model_loading.py – original inference script (still present).
+data/used_cars.csv
+model/ – saved model and normalization tensors.
+Notebooks: first_steps.ipynb, my_pandas.ipynb, etc.
+New package: car_prices/
+__init__.py
+Exposes high-level APIs: train, predict.
+data_processing.py
+load_raw_data(data_path)
+preprocess_features(df)
+preprocess_target(df)
+compute_normalization_stats(X, y)
+normalize_features(X, X_mean, X_std)
+normalize_target(y, y_mean, y_std)
+save_normalization_stats(model_dir, X_mean, X_std, y_mean, y_std)
+load_normalization_stats(model_dir)
+model.py
+build_model(input_dim=3, output_dim=1)
+save_model(model, model_dir)
+load_model(model_dir, input_dim=3, output_dim=1)
+train.py
+train(data_path="data/used_cars.csv", model_dir="model", epochs=2500, lr=1e-4)
+Runs the full pipeline: load → preprocess → normalize → train → save stats + model.
+predict.py
+predict(inputs, model_dir="model") where inputs is a list/array of [age, mileage, accident_free_flag] rows, returns denormalized price predictions.
+Convenience scripts in CarPrices/
+
+train_car_prices.py
+Minimal entry point:
+from car_prices import train
+train() when run as a script.
+predict_car_prices.py
+Example inference script:
+from car_prices import predict
+Predicts for two hard-coded example rows and prints the results.
+How to use it
+Train the model (from CarPrices directory):
+python train_car_prices.py
+Run example predictions (after training):
+python predict_car_prices.py
+Programmatic use inside Python:
+
+from car_prices import train, predict
+# Train (will read CarPrices/data/used_cars.csv and write to CarPrices/model)
+train()
+# Predict on new data rows: [age, mileage, accident_free_flag]
+prices = predict([[5, 2000, 1], [10, 4000, 1]])
+print(prices)
